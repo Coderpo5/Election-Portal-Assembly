@@ -1,0 +1,499 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=7'>
+    <meta http-equiv='Cache-Control' content='no-cache, no-store, must-revalidate'>
+    <meta http-equiv='Pragma' content='no-cache'>
+    <meta http-equiv='Expires' content='0'>
+    <meta http-equiv='refresh' content='300'>
+
+    <link href="{% static 'members/css/index.css' %}" type = "text/css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+    <script src="https://unpkg.com/chart.js@2.8.0/dist/Chart.bundle.js"></script>
+  <script src="https://unpkg.com/chartjs-gauge@0.3.0/dist/chartjs-gauge.js"></script>
+    <style>
+        #elector_geotagging {
+            background-color: #fff;
+        }
+.leaflet-bottom { display: none; }
+        /*.leaflet-control {
+            display: none;
+        }*/
+    </style>
+    <style>
+        .popup {
+            position: absolute;
+            display: none;
+            background: white;
+            border: 1px solid black;
+            padding: 10px;
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 10;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .region {
+            fill: lightgray;
+            transition: fill 0.3s;
+        }
+
+        .region:hover {
+            cursor: pointer;
+        }
+
+
+    </style>
+
+
+    <title>Election</title>
+</head>
+<body>
+
+
+    <header class="header">
+        <div class="logo-search">
+            <div class="logo"><a href="{% url 'Home-Page' %}"><img src="{% static 'members/img/eci-logo.png' %}" alt=""></a></div>
+            <div class="lft-menu">
+                <ul>
+                    <li><a href="{% url 'Home-Page' %}"><span><img src="{% static 'members/img/icons/home.png'%}" alt=""></span> Home</a></li>
+                    <li><a href='#' onClick='window.location.href=window.location.href'><span><img src="{% static 'members/img/icons/refresh.png' %}" alt=""></span> Refresh</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+    <div class="dis-info">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center ">
+                <h6 class="mb-0 mx-2">
+                    <img src = "{% static 'members/img/warning.png' %}">
+                    <strong>Disclaimer: </strong>
+                </h6>
+                <p class="mb-0"> ECI is displaying the information as being filled in the system by the Returning Officers from their respective Counting Centres. The final data for each AC/PC will be shared in Form-20.</p>
+            </div>
+        </div>
+    </div><!-- End of dis-info Div -->
+    <main class="inner-content">
+        <div class="page-title">
+            <h1>General Election to the Assembly of Commons: Trends & Results February-2025</h1>
+            <h2><span> <strong> Mizoram </strong> (Total AC: 40) </span></h2>
+        </div>
+        <div class="container-fluid">
+    <div class="row justify-content-center">
+                  
+        {% for party in party_data%}
+        {% if party.count > 0 and party.name != "No Result" and forloop.counter <= 6%}
+                    <div class="col">
+                        <div class="grid-box gen inc-pty-bg party{{party.acronym}}" style="background-color: {{party.color}}">
+                            <h4>{{party.acronym}}</h4>
+                            <h2>{{party.count}}</h2>
+                            
+                        </div><!-- End of grid-box div -->
+                    </div>
+        {% endif %}
+        {% endfor %}
+        {% if not_top_six_count > 0 %}
+        <div class="col">
+            <div class="grid-box gen inc-pty-bg IND" style="background-color: #999966">
+                <h4 class="Ind">Others & Ind </h4>
+                <h2>{{not_top_six_count}}</h2>
+                
+            </div><!-- End of grid-box div -->
+        </div>
+        {% endif %}
+
+                  
+       
+
+
+    </div>
+        </div>
+
+        
+
+        <section class="my-3">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-6 col-12">
+                        <div class="card custom-card shadow-sm card-hght">
+                            <div class="card-header">Party Wise Results</div>
+                            <div class="card-body parent-wrap">
+                                <div class="scroll-child">
+                                <div class="rslt-table teble-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th style="text-align: left;">Party</th>
+                                                <th style="text-align:right">Won</th>
+                                                <th style="text-align:right">Leading</th>
+                                                <th style="text-align:right">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for party in party_data %} 
+                                        {% if party.name != "No Result" %}
+                                        {% if party.leading_count > 0 or party.won_count > 0 %}                                                                                                               
+                                        <tr class="tr"> 
+                                                <td style="text-align:left">{{party.name}} - {{party.acronym}}</td>
+                                                <td style="text-align:right">
+                                                    {% if party.won_count > 0 %}
+                                                    <a href="{% url 'Party' party.acronym %}">{{party.won_count}}</a>
+                                                    {% else %}
+                                                    <a>{{party.won_count}}</a>
+                                                    {% endif %}
+                                                </td>
+                                                <td style="text-align:right">
+                                                    {% if party.leading_count > 0 %}
+                                                    <a href="{% url 'PartyLeads' party.acronym %}">{{party.leading_count}}</a>
+                                                    {% else %}
+                                                    <a>{{party.leading_count}}</a>
+                                                    {% endif %}
+                                                </td>
+                                                <td style="text-align:right">{{party.count}}</td>
+                                            </tr>
+                                        {% endif %}
+                                        {% endif %}
+                                        {% endfor %}
+                                             
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th>Total</th>
+                                                <th style="text-align:right">{{tot_won_count}}</th>
+                                                <th style="text-align:right">{{tot_leading_count}}</th>
+                                                <th style="text-align:right">{{tot_count}}</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div><!-- End rslt-table Div -->
+                                </div><!-- End of scroll-child Div -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <div class="card custom-card shadow-sm"> 
+                            <div class="card-header">Constituency Wise Results <select class='custom-select' id='ct200_ContentPlaceHolder1_Result1_ddlState' name='state' style='float: right;'> 
+                                <option value=''> Select Constituency </option>
+                                    {% for constituency in constituencies %}
+                                    <option value="{% url 'candidate-wise' constituency.id %}">{{constituency.number}}-{{ constituency.name }}</option>
+                                    {% endfor %}
+
+                            </select></div>
+                            <div class="constituency-map">
+                                <div id="popup" class="popup"></div>
+
+                                <div id="map-wrapper">
+                                    <object
+                                        id="techno-map"
+                                        data="{% static 'members/img/map.svg' %}"
+                                        type="image/svg+xml"
+                                        style="height:612px; position:relative; outline:none;">
+                                    </object>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <div class="card custom-card shadow-sm">
+                            <div class="card-header">Party Wise Results</div>
+                            <div class="card-body chart">
+                                <div class="chart-wrap">
+                                    <canvas id="donutChart" style="max-width: 545px; width: 400px; max-height: 545px; height: 400px;"></canvas>
+                                    <div style="
+                                        font-weight: 600;
+                                        position: absolute;
+                                        width: 35%;
+                                        left: 0;
+                                        right: 0vw;
+                                        margin: auto;
+                                        display: block;
+                                        text-align: center;
+                                        bottom: 25%;
+                                        font-size: 1.5rem;">{{tot_count}}/40</div>
+                                </div><!-- End of chart wrap Div-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <div class="card custom-card shadow-sm">
+                            <div class="card-header">Party Wise Vote Share</div>
+                            <div class="card-body chart">
+                                <div class="chart-wrap">
+                                    <canvas id="piChart" style="    max-width: 545px;
+                                    width: 400px;
+                                    max-height: 545px;
+                                    height: 400px;
+                                    display: block;
+                                    box-sizing: border-box;"></canvas>
+                                </div><!-- End of chart wrap Div-->
+                            </div>
+                        </div>
+                    </div>
+         
+                </div><!-- End of row Div -->
+            <h3 class="foot-title"><a href="{% url 'Statewise' set_number=1 %}" class="btn btn-primary">All Constituencies at a glance <i>&gt;</i></a></h3>
+            </div>
+        </section>
+
+    </main>
+    <footer class="footer">
+        <div class="foot-info">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-6 col-12">
+                        <h6 class="mb-1">Download Voter helpline app to see results on mobile</h6>
+                        <div class="sm-text">Last Updated at 03:20 pm On 15/02/2025</div>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <ul class="d-flex align-items-center items-end">
+                        <li><a href='https://play.google.com/store/apps/details?id=com.eci.citizen' target='_blank'><img src="{% static 'members/img/icons/android.png' %}" alt=''></a></li>
+                            <li><a href='https://apps.apple.com/in/app/voter-helpline/id1456535004' target='_blank'><img src="{% static 'members/img/icons/apple.png' %}" alt=''></a></li>
+                        
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+
+
+
+<script type="text/javascript">
+
+let constituencyData = [];
+let partyVotes = {};
+let partyColors = {};
+let partyTypes = {};
+
+    fetch('/api/constituencies/')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            constituencyData = data.constituency_data;
+            partyVotes = data.party_vote_data.reduce((acc, item) => {
+            acc[item.party_acronym] = (acc[item.party_acronym] || 0) + item.total_votes;
+            return acc;
+        }, {});
+            partyTypes = data.party_vote_data.reduce((acc, item) => {
+            acc[item.party_acronym] = item.party_type;
+            return acc;
+        }, {});
+        console.log(partyVotes)
+        console.log(partyTypes)
+
+        partyColors = data.party_colors;
+
+const partyWinCount = data.party_win_count;
+
+
+            const mapObject = document.getElementById('techno-map');
+            mapObject.data = mapObject.data;
+mapObject.onload = function () {
+    console.log("SVG loaded");
+    const popup = document.getElementById('popup');
+    // Get the SVG document inside the object tag
+    const svgDoc = this.contentDocument;
+
+    if (svgDoc) {
+        constituencyData.forEach(item => {
+        const constituencyId = item.id;  // Get the constituency ID
+    const partyAcronym = item.party_acronym;  // Get the party name
+    const partyColor = partyColors[partyAcronym] || "#b3b3b3";  // Default to gray if no color is found
+
+    const constituencyElement = svgDoc.getElementById(constituencyId);
+    if (constituencyElement) {
+        constituencyElement.style.fill = partyColor;  // Apply the party color to the constituency
+    }
+      })
+
+        svgDoc.querySelectorAll('.region').forEach(region => {
+            // console.log(region);
+        region.addEventListener('mousemove', (e) => {
+            // Display popup
+
+            const id = region.getAttribute('id');
+            const data = constituencyData.find(item => item.id === id);
+
+            console.log(constituencyData)
+                // Display popup if data is found
+                if (data) {
+                    const rect = region.getBoundingClientRect(); // Get position of the region
+                    popup.style.display = 'block';
+                    popup.style.left = `${e.pageX - 90}px`;  // Center the popup above the cursor horizontally
+                    popup.style.top = `${e.pageY - 60}px`
+                    popup.innerHTML = `
+                        <strong>Ac Name:</strong> ${data.ac_name}<br>
+                        <strong>Party:</strong> ${data.party_name}<br>
+                        <strong>Candidate Name:</strong> ${data.candidate_name}
+                    `;
+                }
+        });
+
+        region.addEventListener('mouseout', () => {
+            // Hide popup
+            popup.style.display = 'none';
+        });
+
+        region.addEventListener('click', () => {
+        const id = region.getAttribute('id');
+        const data = constituencyData.find(item => item.id === id);
+            if (data) {
+                window.location.href = `/candidatewise-U01-${data.id}`; // Adjust URL structure as needed
+            }
+        });
+    });
+    const svgElement = svgDoc.querySelector("svg");
+
+svgPanZoom(svgElement, {
+    zoomEnabled: true,
+    controlIconsEnabled: true,
+    fit: true,
+    center: true,
+    minZoom: 1,
+    maxZoom: 20,
+    mouseWheelZoomEnabled: true,
+    dblClickZoomEnabled: true,
+    preventMouseEventsDefault: true
+});
+};
+
+
+var xValues = Object.keys(partyWinCount);
+    var yValues = Object.values(partyWinCount);
+    var barColors = xValues.map(party => partyColors[party] || "#b3b3b3");
+
+    const dataPoints = xValues.map((xValue, index) => ({
+        label: xValue,
+        value: yValues[index],
+        color: barColors[index],
+    })).filter(dataPoint => dataPoint.value > 0);
+
+    dataPoints.sort((a, b) => b.value - a.value);
+
+// Extract sorted and filtered values
+
+const XValues = dataPoints.map(dataPoint => dataPoint.label);
+    const YValues = dataPoints.map(dataPoint => dataPoint.value);
+    const Colors = dataPoints.map(dataPoint => dataPoint.color);
+
+    new Chart("donutChart", {
+        type: "doughnut",
+        data: {
+            labels: XValues,
+            datasets: [{
+                backgroundColor: Colors,
+                data: YValues
+            }]
+        },
+        options: {
+            rotation: 1 * Math.PI,
+            circumference: 1 * Math.PI,
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                },
+                title: {
+                    display: true,
+                    text: ''
+                }
+            }
+        },
+    });
+    
+    // Pi Charts Starts Here
+    const x1Values = Object.keys(partyVotes);
+        const y1Values = Object.values(partyVotes);
+        const bar1Colors = x1Values.map(acronym => partyColors[acronym] || "#b3b3b3");
+
+    var totalVotes = y1Values.reduce((sum, value) => sum + value, 0);
+
+    var percentageValues = y1Values.map(votes => ((votes / totalVotes) * 100).toFixed(2));
+
+    let othersVotes = 0;
+let othersColor = "#b3b3b3";
+
+    const dataset = x1Values.map((party, index) => {
+    const percentage = parseFloat(percentageValues[index]);
+    if ((percentage < 0.5 || party=='IND' || partyTypes[party] == 'unrecognised') && party!="NOTA") {
+        othersVotes += y1Values[index];  // Accumulate votes for "Others"
+        return null;  // Mark this party for exclusion
+    } else {
+        return {
+            label: `${party} (${percentageValues[index]}%)`,
+            value: y1Values[index],
+            color: bar1Colors[index]
+        };
+    }
+}).filter(item => item !== null);  // Remove null entries (parties with < 0.05%)
+
+if (othersVotes > 0) {
+    // Add "Others" category with the accumulated votes
+    dataset.push({
+        label: `Others (${((othersVotes / totalVotes) * 100).toFixed(2)}%)`,
+        value: othersVotes,
+        color: othersColor
+    });
+}
+    
+    new Chart("piChart", {
+        type: "pie",
+        data: {
+            labels: dataset.map(d => d.label),
+            datasets: [{
+                backgroundColor: dataset.map(d => d.color),
+                data: dataset.map(d => d.value)
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'left',
+                },
+                title: {
+                    display: true,
+                    text: ''
+                }
+            }
+        },
+    });
+}
+        })
+
+        .catch(error => {
+            console.error("Error fetching constituency data:", error);
+        });
+
+
+    
+
+</script>
+
+<script>
+    // Get the dropdown element
+    const select = document.getElementById('ct200_ContentPlaceHolder1_Result1_ddlState');
+
+    // Add an event listener for the change event
+    select.addEventListener('change', function() {
+        const selectedValue = this.value;
+        if (selectedValue) {
+            window.location.href = selectedValue; // Redirect to the selected URL
+        }
+    });
+</script>
+
+
+</html>

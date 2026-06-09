@@ -1,0 +1,170 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=7'>
+    <meta http-equiv='Cache-Control' content='no-cache, no-store, must-revalidate'>
+    <meta http-equiv='Pragma' content='no-cache'>
+    <meta http-equiv='Expires' content='0'>
+    <meta http-equiv='refresh' content='300'>
+
+    <link href="{% static 'members/css/index.css' %}" type = "text/css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+    <script src="https://unpkg.com/chart.js@2.8.0/dist/Chart.bundle.js"></script>
+  <script src="https://unpkg.com/chartjs-gauge@0.3.0/dist/chartjs-gauge.js"></script>
+    <style>
+        #elector_geotagging {
+            background-color: #fff;
+        }
+.leaflet-bottom { display: none; }
+        /*.leaflet-control {
+            display: none;
+        }*/
+    </style>
+    <style>
+        .popup {
+            position: absolute;
+            display: none;
+            background: white;
+            border: 1px solid black;
+            padding: 10px;
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 10;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .region {
+            fill: lightgray;
+            transition: fill 0.3s;
+        }
+
+        .region:hover {
+            cursor: pointer;
+        }
+
+
+    </style>
+
+
+    <title>Election</title>
+</head>
+<body>
+
+
+    <header class="header">
+        <div class="logo-search">
+            <div class="logo"><a href="{% url 'Home-Page' %}"><img src="{% static 'members/img/eci-logo.png' %}" alt=""></a></div>
+            <div class="lft-menu">
+                <ul>
+                    <li><a href="{% url 'Home-Page' %}"><span><img src="{% static 'members/img/icons/home.png'%}" alt=""></span> Home</a></li>
+                    <li><a href='#' onClick='window.location.href=window.location.href'><span><img src="{% static 'members/img/icons/refresh.png' %}" alt=""></span> Refresh</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+    <div class="dis-info">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center ">
+                <h6 class="mb-0 mx-2">
+                    <img src = "{% static 'members/img/warning.png' %}">
+                    <strong>Disclaimer: </strong>
+                </h6>
+                <p class="mb-0"> ECI is displaying the information as being filled in the system by the Returning Officers from their respective Counting Centres. The final data for each AC/PC will be shared in Form-20.</p>
+            </div>
+        </div>
+    </div><!-- End of dis-info Div -->
+    <main class="inner-content">
+        <div class="page-title">
+            <h1>General Election to the Assembly of Commons: Trends & Results February-2025</h1>
+        </div>
+
+        <div class="cons-tabs">
+            <div class="container tabs">
+                <div class="row justify-content-center">
+                    <div class="col-lg-4 col-sm-6 col-12">
+                        <div class="tabs-link tabActive"><a href="javascript:void(0)">AC General Elections</a></div>
+                    </div>
+                    <div class="col-lg-4 col-sm-6 col-12">
+                        <div class="tabs-link"><a href="" target="_self">AC BYE Elections</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex-box">
+
+            <div class="item">
+                <div class="asmb-box">
+                    <div class="asmb-title"><img src="{% static 'members/img/mizoram.svg' %}" alt=""></div>
+
+                    <ul>
+                        <li>
+                            <span>Assembly Constituencies</span>
+                            <span style="font-size:0.9rem">{{tot_count}}<sup>*</sup> /40</span>
+                        </li>
+                    </ul>
+
+                    <div class="partyWrap">
+
+                        <div class="parties-list">
+                            <div class="pr-head">
+                                <div style="width: 40%; text-align: left;">Parties</div>
+
+                                <div style="width: 35%; text-align: left;">Leading</div>
+                                <div style="width: 15%; text-align: left;">Won</div>
+                            </div>
+
+                            {% for party in party_data %}
+                            {% if party.count > 0 and party.name != "No Result" and forloop.counter <= 5%}
+                            <div class="pr-row">
+                                <div style="width: 50%; text-align: left;">{{ party.acronym }}</div>
+
+                                <div style="width: 25%; text-align: right;">{{ party.leading_count }}</div>
+                                <div style="width: 25%; text-align: right;">{{ party.won_count }}</div>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                            <div class="detail-btn">
+
+                                <a href="{% url 'Index-Page' %}">Details <i>></i></a>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <h6 style="padding: 10px;">* Status of Top Five Parties</h6>
+
+            </div>
+        </div>
+
+
+    </main>
+    <footer class="footer">
+        <div class="foot-info">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-6 col-12">
+                        <h6 class="mb-1">Download Voter helpline app to see results on mobile</h6>
+                        <div class="sm-text">Last Updated at 03:20 pm On 15/02/2025</div>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <ul class="d-flex align-items-center items-end">
+                        <li><a href='https://play.google.com/store/apps/details?id=com.eci.citizen' target='_blank'><img src="{% static 'members/img/icons/android.png' %}" alt=''></a></li>
+                            <li><a href='https://apps.apple.com/in/app/voter-helpline/id1456535004' target='_blank'><img src="{% static 'members/img/icons/apple.png' %}" alt=''></a></li>
+                        
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>

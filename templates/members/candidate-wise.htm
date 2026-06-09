@@ -1,0 +1,306 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=7'>
+    <meta http-equiv='Cache-Control' content='no-cache, no-store, must-revalidate'>
+    <meta http-equiv='Pragma' content='no-cache'>
+    <meta http-equiv='Expires' content='0'>
+    <meta http-equiv='refresh' content='300'>
+
+    <link href="{% static 'members/css/candidate-wise.css' %}" rel="stylesheet">
+    <script src="https://unpkg.com/chart.js@2.8.0/dist/Chart.bundle.js"></script>
+  <script src="https://unpkg.com/chartjs-gauge@0.3.0/dist/chartjs-gauge.js"></script>
+    <style>
+        #elector_geotagging {
+            background-color: #fff;
+        }
+.leaflet-bottom { display: none; }
+        /*.leaflet-control {
+            display: none;
+        }*/
+    </style>
+
+</head>
+
+<title>Election</title>
+</head>
+<body>
+
+
+    <header class="header">
+        <div class="logo-search">
+            <div class="logo"><a href="{% url 'Home-Page' %}"><img src="{% static 'members/img/eci-logo.png' %}" alt=""></a></div>
+            <div class="lft-menu">
+                <ul>
+                    <li><a href="{% url 'Home-Page' %}"><span><img src="{% static 'members/img/icons/home.png'%}" alt=""></span> Home</a></li>
+                    <li><a href='#' onClick='window.location.href=window.location.href'><span><img src="{% static 'members/img/icons/refresh.png' %}" alt=""></span> Refresh</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+    <div class="dis-info">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center ">
+                <h6 class="mb-0 mx-2">
+                    <img src = "{% static 'members/img/warning.png' %}">
+                    <strong>Disclaimer: </strong>
+                </h6>
+                <p class="mb-0"> ECI is displaying the information as being filled in the system by the Returning Officers from their respective Counting Centres. The final data for each AC/PC will be shared in Form-20.</p>
+            </div>
+        </div>
+    </div><!-- End of dis-info Div -->
+    <main class="inner-content">
+        <div class = "container-fluid">
+            <div class="page-title">
+                <h1>General Election to the Assembly of Commons: Trends & Results February-2025</h1>
+                <h2>Assembly Constituency <span> {{constituency.number}} - {{constituency.name}} <strong> (Mizoram) </strong> </span></h2>
+            </div>
+
+            <div class='middle-head'>
+                <div class='round-status'> Status as on Round, <span>{{constituency.current_round}}</span>/{{constituency.total_rounds}}</div>
+                
+                {% if constituency.result_declared == False %}                
+                <div class="round-status"
+                style="font-size: 1.5em;
+    font-weight: bold;
+    background-color:#000000;
+    padding: 5px 10px;
+    color: #ffffff; /* Blue color for emphasis */
+    transition: opacity 0.5s ease-in-out;">Incumbent: <strong>{{incumbent_party}}</strong></div>
+                {% elif incumbent_party != top_candidate.acronym %}                
+                <div id="status" class="round-status" 
+                style="font-size: 1.5em;
+    font-weight: bold;
+    background-color:#000000;
+    padding: 5px 10px;
+    color: #ffffff; /* Blue color for emphasis */
+    transition: opacity 0.5s ease-in-out;">RESULT DECLARED</div>
+                {% else %}                
+                <div id="status2" class="round-status" 
+                style="font-size: 1.5em;
+    font-weight: bold;
+    background-color: #000000;
+    padding: 5px 10px;
+    color: #ffffff; /* Blue color for emphasis */
+    transition: opacity 0.5s ease-in-out;">RESULT DECLARED</div>
+                {% endif%}
+                <div class='switch-list'>
+                    <ul>
+                        <li><a href="{% url 'roundwise' constituency.id %}"><img src="{% static 'members/img/icons/roundwise.png' %}" alt='' title="Round-wise EVM View"></a></li>
+                        <li><a href="{% url 'candidate-wise' constituency.id %}"><img src="{% static 'members/img/icons/user-info.png' %}" alt='' title="Constituency Wise Candidate View"></a></li>
+                        <li><a href="{% url 'Votes' constituency.id %}"><img src="{% static 'members/img/icons/tab-info.png' %}" alt='' title="Constituency Wise Table View"></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+ 
+
+        <div class='box-wraper box-boarder'>
+            <div class='container-fluid'>
+                <div class='row'>
+        
+                {% for candidate in candidate_data %}
+                    <div class='col-md-4 col-12'>
+                        <div class='cand-box'>
+                            {% if candidate.name == 'NOTA'%}
+                            <figure><img src="{% static 'members/img/icons/nota.png' %}" alt=''></figure>
+                            {% elif candidate.gender == 'Male' %}
+                            <figure><img src="https://randomuser.me/api/portraits/men/{{ forloop.counter }}.jpg" alt=''></figure>
+                            {% else %}
+                            <figure><img src="https://randomuser.me/api/portraits/women/{{ forloop.counter }}.jpg" alt=''></figure>
+                            {% endif %}
+                            <div class='cand-info'>
+                                {% if constituency.result_declared == False %}
+                                {% if top_candidate.votes == 0 %}
+                                <div class='status noresult'>
+                                    <div style='text-transform: capitalize'>Awaited</div>
+                                    <div> {{candidate.votes}} <span>(+ {{vote_difference}})</span></div>
+                                </div>
+                                {% else %}
+                                {% if candidate == top_candidate %}
+                                <div class='status noresult'>
+                                    <div style='text-transform: capitalize'>Leading</div>
+                                    <div> {{candidate.votes}} <span>(+ {{vote_difference}})</span></div>
+                                </div>
+                                {% else %}
+                                <div class='status noresult'>
+                                    <div style='text-transform: capitalize'>Trailing</div>
+                                    <div> {{candidate.votes}} <span>(- {{candidate.vote_diff}})</span></div>
+                                </div>
+                                {% endif %}
+                                {% endif %}
+
+                                {% else %}
+                                {% if candidate == top_candidate %}
+                                <div class='status won'>
+                                    <div style='text-transform: capitalize'>Won</div>
+                                    <div> {{candidate.votes}} <span>(+ {{vote_difference}})</span></div>
+                                </div>
+                                {% else %}
+                                <div class='status lost'>
+                                    <div style='text-transform: capitalize'>Lost</div>
+                                    <div> {{candidate.votes}} <span>(- {{candidate.vote_diff}})</span></div>
+                                </div>
+                                {% endif %}
+
+                                {% endif %}
+                                <div class='nme-prty'>
+                                    <h5>{{candidate.name}}</h5>
+                                    <h6>{{candidate.party}}</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                {% endfor %}
+                    <!-- <div class='col-md-4 col-12'>
+                        <div class='cand-box'>
+                            <figure><img src="{% static 'members/img/icons/nota.png' %}" alt=''></figure>
+                            <div class='cand-info'>
+                                <div class='status lost'>
+                                    <div style='text-transform: capitalize'>lost</div>
+                                    <div>8626 <span>( -2101)</span></div>
+                                </div>
+                                <div class='nme-prty'>
+                                    <h5>ZORAMTHANGA</h5>
+                                    <h6>Mizo National Front</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="footer">
+        <div class="foot-info">
+            <div class="container-fluid">
+                <div class="row footrow">
+                    <div class="col-md-6 col-12">
+                        <h6 class="mb-1">Download Voter helpline app to see results on mobile</h6>
+                        <div class="sm-text">Last Updated at 03:20 pm On 15/02/2025</div>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <ul class="d-flex align-items-center items-end">
+                            <li><a href='https://play.google.com/store/apps/details?id=com.eci.citizen' target='_blank'><img src="{% static 'members/img/icons/android.png' %}" alt=''></a></li>
+                            <li><a href='https://apps.apple.com/in/app/voter-helpline/id1456535004' target='_blank'><img src="{% static 'members/img/icons/apple.png' %}" alt=''></a></li>
+                        
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+
+<script>
+    function getTextColorBasedOnBackground(bgColor) {
+  // Convert the background color to RGB
+  console.log(bgColor);
+  let rgb;
+
+  // Handle hex format
+  if (bgColor.startsWith("#")) {
+    const hex = bgColor.replace("#", "");
+    rgb = hex.length === 3
+      ? hex.split("").map((char) => parseInt(char + char, 16))
+      : [parseInt(hex.substr(0, 2), 16), parseInt(hex.substr(2, 2), 16), parseInt(hex.substr(4, 2), 16)];
+  }
+  // Handle rgb() or rgba() format
+  else if (bgColor.startsWith("rgb")) {
+    rgb = bgColor.match(/\d+/g).map(Number);
+  } else {
+    console.error("Invalid color format:", bgColor);
+    return "black"; // Default to black text in case of error
+  }
+
+  // Calculate the relative luminance
+  const [r, g, b] = rgb.map((channel) => {
+    const normalized = channel / 255;
+    return normalized <= 0.03928
+      ? normalized / 12.92
+      : Math.pow((normalized + 0.055) / 1.055, 2.4);
+  });
+
+  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+  console.log(luminance);
+  // Decide text color based on luminance
+  return luminance > 0.5 ? "black" : "white"; // Light background: black text, dark background: white text
+}
+</script>
+
+<script>
+    let showResultDeclared = false; // Flag to toggle between texts
+  
+    const winningPartyColor = `{{color}}`;
+    const defaultColor="#000000";
+    function toggleStatus1() {
+      const statusDiv = document.getElementById('status');
+      if(statusDiv){
+      statusDiv.style.opacity = 0; // Start fade-out
+  
+      setTimeout(() => {
+        // Update text after fade-out
+        if (showResultDeclared) {
+        statusDiv.textContent = "RESULT DECLARED";
+        statusDiv.style.backgroundColor = defaultColor; // Neutral color
+        statusDiv.style.color = '#FFFFFF';
+      } else {
+        statusDiv.textContent = `{{acronym}} GAIN from {{incumbent_party}}`;
+        statusDiv.style.backgroundColor = winningPartyColor;
+        statusDiv.style.color = getTextColorBasedOnBackground(winningPartyColor2); // Backend-provided color
+        console.log(getTextColorBasedOnBackground(winningPartyColor2)); // Backend-provided color
+      }
+        statusDiv.color = winningPartyColor
+        statusDiv.style.opacity = 1; // Fade-in after text update
+        showResultDeclared = !showResultDeclared; // Toggle flag
+      }, 500); // Wait for fade-out to complete (matches transition duration)
+    }
+}
+  
+    // Call toggleStatus every 3 seconds
+    setInterval(toggleStatus1, 3000);
+</script>
+
+
+<script>
+    let showResultDeclared2 = false; // Flag to toggle between texts
+  
+    const winningPartyColor2 = `{{color}}`;
+    const defaultColor2="#000000";
+    function toggleStatus2() {
+      const statusDiv2 = document.getElementById('status2');
+      statusDiv2.style.opacity = 0; // Start fade-out
+  
+      if(statusDiv2){
+      setTimeout(() => {
+        // Update text after fade-out
+        if (showResultDeclared2) {
+        statusDiv2.textContent = "RESULT DECLARED";
+        statusDiv2.style.backgroundColor = defaultColor2; // Neutral color
+        statusDiv2.style.color = '#FFFFFF';
+      } else {
+        statusDiv2.textContent = `{{acronym}} HOLD`;
+        statusDiv2.style.backgroundColor = winningPartyColor2;
+        statusDiv2.style.color = getTextColorBasedOnBackground(winningPartyColor2); // Backend-provided color
+        console.log(getTextColorBasedOnBackground(winningPartyColor2));
+    }
+        statusDiv2.color = winningPartyColor2
+        statusDiv2.style.opacity = 1; // Fade-in after text update
+        showResultDeclared2 = !showResultDeclared2; // Toggle flag
+      }, 500); // Wait for fade-out to complete (matches transition duration)
+    }
+}
+  
+    // Call toggleStatus every 3 seconds
+    setInterval(toggleStatus2, 3000);
+</script>
+</html>

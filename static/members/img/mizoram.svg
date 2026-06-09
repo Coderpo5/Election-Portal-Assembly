@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" viewBox="0 0 312 77.035">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.26" y1="1" x2="0.615" y2="-0.281" gradientUnits="objectBoundingBox">
+        <stop offset="0" stop-color="#177a3a"/>
+        <stop offset="0.319" stop-color="#42c76a"/>
+        <stop offset="1" stop-color="#35b85c"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="0.557" y1="0.8" x2="0.361" y2="-0.237" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="0.69" stop-color="#fff" stop-opacity="0.702"/>
+      <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-4" x1="0.443" y1="0.8" x2="0.639" y2="-0.237" xlink:href="#linear-gradient-2"/>
+  </defs>
+  <g id="Group_13727" data-name="Group 13727" transform="translate(-8900 -19538)">
+    <path id="Path_12943" data-name="Path 12943" d="M270.522,713.434l11.012,12.036V713.434Z" transform="translate(8629.478 18889.566)" fill="#0a642a"/>
+    <path id="Rectangle_4491" data-name="Rectangle 4491" d="M12,0H300a12,12,0,0,1,12,12V65a0,0,0,0,1,0,0H0a0,0,0,0,1,0,0V12A12,12,0,0,1,12,0Z" transform="translate(8900 19538)" fill="url(#linear-gradient)"/>
+    <text id="_West_Bengal" data-name="West Bengal" transform="translate(9056 19579)" fill="#fff" font-size="21" font-family="Poppins-Bold, Poppins" font-weight="700" letter-spacing="0.01em"><tspan x="-50.763" y="0">MIZORAM</tspan></text>
+    <path id="Path_12944" data-name="Path 12944" d="M280.575,713.434,270.522,725.47V713.434Z" transform="translate(8931.205 18889.566)" fill="#0a642a"/>
+    <path id="Path_12934" data-name="Path 12934" d="M320.138,81.09v56.167c0,2.008-2.208,3.635-4.934,3.635H238.96Z" transform="translate(8891.642 19462.109)" opacity="0.2" fill="url(#linear-gradient-2)"/>
+    <path id="Path_12933" data-name="Path 12933" d="M371.74,81.09v61.049c0,2.182-3.612,3.951-8.07,3.951H238.96Z" transform="translate(8840.04 19456.91)" opacity="0.2" fill="url(#linear-gradient-2)"/>
+    <path id="Path_12934-2" data-name="Path 12934" d="M238.96,81.09v56.167c0,2.008,2.208,3.635,4.934,3.635h76.244Z" transform="translate(8661.04 19462.109)" opacity="0.2" fill="url(#linear-gradient-4)"/>
+    <path id="Path_12933-2" data-name="Path 12933" d="M238.96,81.09v61.049c0,2.182,3.612,3.951,8.07,3.951H371.74Z" transform="translate(8661.04 19456.91)" opacity="0.2" fill="url(#linear-gradient-4)"/>
+  </g>
+</svg>
